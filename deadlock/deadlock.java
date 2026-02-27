@@ -1,0 +1,98 @@
+import java.util.*;
+
+public class DeadlockPrevention {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of processes: ");
+        int n = sc.nextInt();
+
+        System.out.print("Enter number of resource types: ");
+        int m = sc.nextInt();
+
+        int[][] alloc = new int[n][m];
+        int[][] max = new int[n][m];
+        int[][] need = new int[n][m];
+        int[] avail = new int[m];
+
+        System.out.println("\nEnter Allocation Matrix:");
+        for (int i = 0; i < n; i++) {
+            System.out.print("P" + (i + 1) + ": ");
+            for (int j = 0; j < m; j++) {
+                alloc[i][j] = sc.nextInt();
+            }
+        }
+
+        System.out.println("\nEnter Maximum (Claim) Matrix:");
+        for (int i = 0; i < n; i++) {
+            System.out.print("P" + (i + 1) + ": ");
+            for (int j = 0; j < m; j++) {
+                max[i][j] = sc.nextInt();
+            }
+        }
+
+        System.out.print("\nEnter Available Resources: ");
+        for (int i = 0; i < m; i++) {
+            avail[i] = sc.nextInt();
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                need[i][j] = max[i][j] - alloc[i][j];
+            }
+        }
+
+        boolean[] finish = new boolean[n];
+        int[] safeSeq = new int[n];
+        int[] work = Arrays.copyOf(avail, m);
+
+        int count = 0;
+
+        while (count < n) {
+            boolean found = false;
+
+            for (int i = 0; i < n; i++) {
+                if (!finish[i]) {
+
+                    boolean possible = true;
+
+                    for (int j = 0; j < m; j++) {
+                        if (need[i][j] > work[j]) {
+                            possible = false;
+                            break;
+                        }
+                    }
+
+                    if (possible) {
+                        for (int j = 0; j < m; j++) {
+                            work[j] += alloc[i][j];
+                        }
+
+                        safeSeq[count] = i + 1;
+                        finish[i] = true;
+                        found = true;
+                        count++;
+                    }
+                }
+            }
+
+            if (!found) {
+                break;
+            }
+        }
+
+        if (count == n) {
+            System.out.println("\nSystem is in SAFE state.");
+            System.out.print("Safe sequence: ");
+            for (int i = 0; i < n; i++) {
+                System.out.print("P" + safeSeq[i] + " ");
+            }
+        } else {
+            System.out.println("\nSystem is NOT in safe state (Deadlock may occur).");
+        }
+
+        sc.close();
+    }
+}
