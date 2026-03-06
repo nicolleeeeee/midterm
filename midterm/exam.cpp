@@ -3,6 +3,7 @@
 #include <queue>
 #include <memory>
 #include <algorithm>
+using namespace std;
 
 enum class AA { SYSTEM, INTERACTIVE, BATCH };
 enum class BB { READY, RUNNING,BLOCKED,TERMINATED };
@@ -17,9 +18,9 @@ struct CC{
     int II;
     BB JJ;
 
-    std::vector<int> KK;
-    std ::vector<int> LL;
-    std::vector<int> MM;
+    vector<int> KK;
+    vector<int> LL;
+    vector<int> MM;
 
     CC(int pid, AA t, int cpuTime, const std::vector<int>& maxRes)
         : DD(pid), EE(t), FF(cpuTime), GG(cpuTime),
@@ -29,8 +30,8 @@ struct CC{
 
 class NN {
 private:
-        std::vector<int> available;
-        std ::vector<std::shared_ptr<CC>> allProcesses;
+        vector<int> available;
+        vector<std::shared_ptr<CC>> allProcesses;
 
 public:
     NN(const std::vector<int>& initialResources)
@@ -67,12 +68,12 @@ void QQ(std::shared_ptr<CC> p) {
     }
 }
 
-std::vector<std::shared_ptr<CC>> RR() {
-std::vector<std::shared_ptr<CC>> wokeUp;
+vector<std::shared_ptr<CC>> RR() {
+vector<std::shared_ptr<CC>> wokeUp;
 
 for (auto& p : allProcesses) {
    if (p->JJ == BB::BLOCKED && p->MM[0] > 0) {
-       std::vector<int> retryRequest(p->MM.size(), 0);
+       vector<int> retryRequest(p->MM.size(), 0);
        for (size_t i = 0; i <retryRequest.size(); ++i) {
         if (p->MM[i] > 0) {
             retryRequest[i] = std::min(p->MM[i], available[i]);
@@ -94,20 +95,20 @@ for (auto& p : allProcesses) {
     return wokeUp;
 }
 void SS() const{
-    std::cout << "Available: [";
+    cout << "Available: [";
     for(size_t i = 0; i < available.size(); ++i) {
-        std::cout << available[i];
+    cout << available[i];
         if (i < available.size() - 1) std::cout << ", ";
     }
-    std::cout << "]\n";
+    cout << "]\n";
 }
 };
 
 class TT {
 private:
-    std::vector<std::vector<std::queue<std::shared_ptr<CC>>>> queues;
-    std::vector<int> timeQuantum;
-    std::vector<int> agingThreshold;
+    vector<std::vector<std::queue<std::shared_ptr<CC>>>> queues;
+    vector<int> timeQuantum;
+    vector<int> agingThreshold;
 
     int YY(AA t) const{
         return (t == AA::SYSTEM) ? 0 : 
@@ -130,12 +131,12 @@ public:
         queues[typeIdx][0].push(p);
 }
 
-void UU(std::shared_ptr<CC> p) {
+void UU(shared_ptr<CC> p) {
     int typeIdx = YY(p->EE);
     queues[typeIdx][0].push(p);
 }
 
-std::shared_ptr<CC> XX() {
+shared_ptr<CC> XX() {
    for (int typeIdx = 0; typeIdx < 3; ++typeIdx) {
        for (size_t level = 1; level < queues[typeIdx].size(); ++level) {
                auto& fromQueue = queues[typeIdx][level];
@@ -166,16 +167,16 @@ int WW(int level) const {
 
 };
 int main() {
-  std::cout<< "====== Resource-Aware TT (MLQ + MLFQ + Banker's) ======\n\n";
+  cout<< "====== Resource-Aware TT (MLQ + MLFQ + Banker's) ======\n\n";
 
-  std::vector<int> resources = {15, 8};
+  vector<int> resources = {15, 8};
   NN rm (resources);
 
   TT ZZ(3,{2, 4, 6},{3, 6});
 
-  auto p1 = std::make_shared<CC>(1, AA::SYSTEM,      10, std::vector<int>{5, 2});
-  auto p2 = std::make_shared<CC>(2, AA::INTERACTIVE, 15, std::vector<int>{3, 1});
-  auto p3 = std::make_shared<CC>(3, AA::BATCH,       20, std::vector<int>{4, 2});
+  auto p1 = make_shared<CC>(1, AA::SYSTEM,      10, vector<int>{5, 2});
+  auto p2 = make_shared<CC>(2, AA::INTERACTIVE, 15, vector<int>{3, 1});
+  auto p3 = make_shared<CC>(3, AA::BATCH,       20, vector<int>{4, 2});
 
   rm.OO(p1);
   rm.OO(p2);
@@ -189,18 +190,18 @@ int main() {
   int maxTime = 60;
 
   while (timeStep < maxTime) {
-    std::cout << "\n--- Time Step " << timeStep << " ---\n";
+    cout << "\n--- Time Step " << timeStep << " ---\n";
 
     auto wokeUp = rm.RR();
     for (auto& p : wokeUp) {
-        std::cout << "Process " << p->DD << " unblocked\n";
+       cout << "Process " << p->DD << " unblocked\n";
         ZZ.UU(p);
     }
     auto current = ZZ.XX();
 
 
     if (!current) {
-        std::cout << "No ready processes.\n";
+        cout << "No ready processes.\n";
         rm.SS();
         timeStep++;
         continue;
@@ -208,10 +209,10 @@ int main() {
     current->JJ = BB::RUNNING;
     int quantum = ZZ.WW(current->HH);
 
-    std::string typeStr = (current->EE == AA::SYSTEM) ? "SYSTEM" :
+   string typeStr = (current->EE == AA::SYSTEM) ? "SYSTEM" :
                       (current->EE == AA::INTERACTIVE) ? "INTERACTIVE" : "BATCH";
 
-    std::cout << "Running CC " << current->DD 
+    cout << "Running CC " << current->DD 
               << " (" << typeStr << ", Level" << current->HH
               << ") for "<< quantum << " time units\n";
 
@@ -219,20 +220,20 @@ int main() {
     if (current-> GG < 0)
         current-> GG = 0;
 
-    std::vector<int> request = {0, 0};
+   vector<int> request = {0, 0};
     if (current->GG > 0 && (rand()% 100) < 30) {
         request = {1, 0};
     }
     if (!rm.PP(current, request)) {
-        std::cout << "Request BLOCKED\n";
+        cout << "Request BLOCKED\n";
         timeStep++;
         continue;
     }
-    std::cout << "Request GRANTED\n";
+    cout << "Request GRANTED\n";
     
     if (current->GG == 0) {
         current->JJ = BB::TERMINATED;
-        std::cout << "CC " << current->DD << " COMPLETED\n";
+       cout << "CC " << current->DD << " COMPLETED\n";
         rm.QQ(current);
     } else {
         current->JJ = BB::READY;
@@ -246,7 +247,7 @@ int main() {
                   p3->JJ == BB::TERMINATED);
 
     if (allDone) {
-    std ::cout << "\n=== All Processes Completed ===\n";
+    cout << "\n=== All Processes Completed ===\n";
     break;
 
         }
@@ -254,6 +255,6 @@ int main() {
         timeStep++;
     }
 
-    std::cout << "===Simulation Finished ===\n";
+   cout << "===Simulation Finished ===\n";
     return 0;
     }
