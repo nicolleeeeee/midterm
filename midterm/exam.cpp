@@ -137,7 +137,7 @@ void UU(shared_ptr<CC> p) {
 }
 
 shared_ptr<CC> XX() {
-   for (int typeIdx = 0; typeIdx < 3; ++typeIdx) {
+       for (int typeIdx = 0; typeIdx < 3; ++typeIdx) {
        for (size_t level = 1; level < queues[typeIdx].size(); ++level) {
                auto& fromQueue = queues[typeIdx][level];
                auto& toQueue = queues[typeIdx][level - 1];
@@ -159,6 +159,16 @@ shared_ptr<CC> XX() {
            }
        }
     }
+    for (int typeIdx = 0; typeIdx < 3; ++typeIdx) {
+        for (size_t level = 0; level < queues[typeIdx].size(); ++level) {
+            if (!queues[typeIdx][level].empty()) {
+                return queues[typeIdx][level].front();
+            }
+        }
+    }
+    return nullptr;
+}
+
 int WW(int level) const {
     if (level >= 0 && level < (int)timeQuantum.size())
         return timeQuantum[level];
